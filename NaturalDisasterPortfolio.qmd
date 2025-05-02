@@ -10,7 +10,7 @@ library(readr)
 ```
 
 ```{r}
-X1900_2021_DISASTERS_xlsx_emdat_data <- read_csv("~/Desktop/STAT 210/Final Portfolio/DISASTERS/1900_2021_DISASTERS.xlsx - emdat data.csv")
+disaster_raw <- read_csv("~/Desktop/STAT 210/Final Portfolio/DISASTERS/1900_2021_DISASTERS.xlsx - emdat data.csv")
 ```
 
 
@@ -20,7 +20,7 @@ X1900_2021_DISASTERS_xlsx_emdat_data <- read_csv("~/Desktop/STAT 210/Final Portf
 2. The data source that I will be using for this portfolio is a table of worldwide disasters that include data about where and when the event was, what type of disaster was it, and how it affected the area which includes death tolls, injured numbers, damage costs, etc. 
 3. The research questions that I am interested in determining are:
   a. Does the country of origin affect the amount of fatalities/ damage costs?
-  b. How does the type of disaster differ in the result of the area that it affected?
+  b. How does the type of disaster influence the human and economic impact across different countries or regions?
   
 *Data Visualization:*
 1. For the final visualizations, I think a bar chart would work best for the first research question with the x-axis displaying the country of origin, and the y-axis displaying the damage costs. For the second research question, I have a couple of ideas which include another bar chart except with 3 portions. The x-axis would show the type of disaster, the y-axis would be the magnitude/ impact of the disaster which could be injured, deaths, damages, etc, and the fill could be the regions. Another idea for this question would be a scatter plot using the same axis or possibly a heat map would be interesting to see with this idea as the rows could be the disasters, the columns could be the region, and the color intensity would represent the impact level (eg. dark red = more deaths). 
@@ -37,4 +37,42 @@ X1900_2021_DISASTERS_xlsx_emdat_data <- read_csv("~/Desktop/STAT 210/Final Portf
 7. I think pivoting could be useful to adjust the data for each question so I will be something that I can use to summarize what is needed for each research question.
 8. The data comes with many totals but I think that the summary tool will to useful to understand mean occurrences of disasters in their region.
 9. Besides the answers to the questions above, I can't think of more ways to adjust the data to better fit an answer to each of the research questions.
+
+**Data Cleaning Start:**
+
+*Research Question 1:* Does the country of origin affect the amount of fatalities/ damage costs?
+
+```{r}
+#| label: Cleaning Raw for Q1
+ResearchQ1_clean <- disaster_raw %>%
+  select(Country, Origin, `Total Deaths`, `Total Damages ('000 US$)`) #columns wanted to keep
+
+write_csv(ResearchQ1_clean, file = "data_clean/ResearchQ1_clean.csv") #saving clean data
+```
+
+*Research Question 2:* How does the type of disaster influence the human and economic impact across different countries or regions?
+
+```{r}
+#| label: Cleaning Raw for Q2
+ResearchQ2_clean <- disaster_raw %>%
+  
+  select(
+    `Disaster Type`, Country, Region, Continent,`Total Deaths`, `No Injured`, `Total Affected`, `Total Damages ('000 US$)`) %>% #selecting the columns that I think would be useful to keep to answer question
+  
+  filter(               
+    !(is.na(`Total Deaths`) & is.na(`No Injured`) & 
+           is.na(`Total Affected`) & is.na(`Total Damages ('000 US$)`))
+    ) %>% #Removing rows where all impact columns are missing
+  
+  filter(
+    !is.na(`Disaster Type`), !is.na(Country)
+    ) #removing rows with missing Disaster Type or Country
+  
+write_csv(ResearchQ2_clean, file = "data_clean/ResearchQ2_clean.csv") #saving clean data
+```
+
+
+
+
+
 
